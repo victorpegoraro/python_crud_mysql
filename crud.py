@@ -1,9 +1,14 @@
+
+#!/usr/bin/env python
+
+#importando bibliotecas
 import PySimpleGUI as sg
 import mysql.connector
 
-
+#função para conectar com servidor
 def conectar():
 
+  #Interface da função
   layoutbd = [ [sg.Text('Cenectar com banco de dados MySQL')],
             [sg.Text('Host ex :localhost', size=(20, 1)), sg.InputText(key='host')],
             [sg.Text('User ex: root', size=(20, 1)), sg.InputText(key='user')],
@@ -14,7 +19,7 @@ def conectar():
 
   windowbd = sg.Window('CRUD Ptyhon - Conectar com BD', layoutbd)
 
-  while True:             # Event Loop
+  while True:  # Event Loop
     event, values = windowbd.read()
     print(event, values)
     if event in (None, 'Sair'):
@@ -30,11 +35,13 @@ def conectar():
 
         mycursor = mydb.cursor()
         break
-
+      
+      #Erro : banco de dados não está ativo
       except mysql.connector.errors.InterfaceError:
         notificacao = "Erro: Ative o banco de dados"
         windowbd['out'].update(notificacao)
 
+      #Erro: informações incorretas
       except mysql.connector.errors.DatabaseError:
         notificacao = "Erro: Não foi possivel conectar"
         windowbd['out'].update(notificacao)
@@ -45,12 +52,13 @@ def conectar():
 
 
 
-sg.theme('SandyBeach')  # Add some color to the window
+sg.theme('SandyBeach')#Tema do sistema 
 
 
-#janela de login
+#Função de login
 def login():
 
+  #Interface de login
   layout = [  [sg.Text('Login page')],
               [sg.Text('Usuario', size=(10, 1)), sg.InputText(key='usuario')],
               [sg.Text('Senha', size=(10, 1)), sg.InputText(key='senha')],
@@ -59,13 +67,13 @@ def login():
 
   window = sg.Window('CRUD Ptyhon - Login', layout)
 
-  while True:             # Event Loop
+  while True:  #Loop de eventos da interface
     event, values = window.read()
     print(event, values)
     if event in (None, 'Sair'):
         break
     if event == 'Entrar':
-
+      #Query para validação de informações de login
       sql = "SELECT usuario FROM usuarios WHERE usuario = %s AND senha = %s "
       val = (values['usuario'], values['senha'])
 
@@ -77,7 +85,7 @@ def login():
         break
 
       else:
-        window['out'].update("Usuario ou senha incorreto")
+        window['out'].update("Usuario ou senha incorreto")#Mostrar erro de log na interface
 
     if event == "Registrar":
       break
@@ -89,23 +97,23 @@ def login():
     registrar()
 
 
-#Janela do usuario
+#área do usuario
 def user(nome):
-
+  #innterface gáfica
   layout1 = [ [sg.Text(f'Bem vindo {nome}')],
               [sg.Text(size=(30,1), key='out')],
               [sg.Button('Alterar dados'), sg.Button('Deletar conta'), sg.Button("Logout")]]
 
   window1 = sg.Window('CRUD Ptyhon - Conta', layout1)
 
-  while True:  # Event Loop
+  while True:  #Loop de eventos
     event, values = window1.read()
     print(event, values)
     if event in (None, 'Sair'):
         break
 
     if event == 'Deletar conta':
-
+      #Query para deletar usuario
       sql = "DELETE FROM usuarios WHERE usuario = %s"
       val = (nome, )
 
@@ -201,7 +209,7 @@ def registrar():
 def criarusuario(usuario,email,senha):
 
   if usuario and email and senha:
-
+    #Query para inserir dados do usuario
     sql = "INSERT INTO usuarios (usuario, email, senha) VALUES (%s, %s, %s)"
     val = (usuario, email, senha)
     mycursor.execute(sql, val)
